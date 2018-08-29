@@ -3,7 +3,6 @@ __author__ = 'oidin'
 import cothread.catools as catools
 import cothread
 import sys
-from epics import PV
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from cothread.catools import *
@@ -11,7 +10,7 @@ from cothread.catools import *
 
 class MonitoringThread(QThread):
 
-    def __init__(self,pv):
+    def __init__(self,pvname):
         QThread.__init__(self)
         self.pvname=pvname
 
