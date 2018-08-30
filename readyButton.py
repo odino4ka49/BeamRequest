@@ -59,14 +59,14 @@ class Form(QDialog):
     def whichbtn(self,b):
         if b.isChecked():
             if b.text()=="e+":
-                setPv(2)
+                self.setPv(2)
                 self.setbtnzero(self.b1)
             elif b.text()=="e-":
-                setPv(1)
+                self.setPv(1)
                 self.setbtnzero(self.b2)
 
         else:
-            setPv(0.0)
+            self.setPv(0.0)
 
     def setbtns(self,pv_val):
         print "camonitor",pv_val
@@ -82,23 +82,21 @@ class Form(QDialog):
             self.setbtnuno(self.b2)
 
 
-def setPv(value):
-    pv = "VEPP3:InjRequest-SP"
-    while True:
-        try:
-            caput(pv,float(value),wait=True)
-        except:
-            caput(pv,float(value),wait=True)
-        else:
-            break
-            #print "caget",caget(pv)
+    def setPv(self,value):
+        while True:
+            try:
+                caput(self.pvname,float(value),wait=True)
+            except:
+                caput(self.pvname,float(value),wait=True)
+            else:
+                break
 
 
 def main():
-    app = QApplication(sys.argv)
+    app = cothread.iqt()
     ex = Form()
     ex.show()
-    sys.exit(app.exec_())
+    cothread.WaitForQuit()
 
 if __name__ == '__main__':
     main()
