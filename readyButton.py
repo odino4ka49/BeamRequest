@@ -34,15 +34,15 @@ class Form(QDialog):
         self.b1 = QPushButton("e-")
         self.b1.setCheckable(True)
         self.b1.clicked.connect(lambda:self.whichbtn(self.b1))
+        self.b1.setStyleSheet('QPushButton:checked { border-image: url(images/squareprev.png)}')
         self.b1.setFixedSize(100,100)
         layout.addWidget(self.b1)
 
         self.b2 = QPushButton("e+")
         self.b2.setCheckable(True)
         self.b2.clicked.connect(lambda:self.whichbtn(self.b2))
-        self.b2.setStyleSheet(
-                      "QPushButton:checked { background-color: blue;color:#000000; }" )
         self.b2.setFixedSize(100,100)
+        self.b2.setStyleSheet('QPushButton:checked { border-image: url(images/squareprev.png)}')
         layout.addWidget(self.b2)
 
         self.pvname = "VEPP3:InjRequest-SP"
