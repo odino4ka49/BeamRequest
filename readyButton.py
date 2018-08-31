@@ -67,6 +67,14 @@ class RequestButton(QPushButton):
         self.setStyleSheet('QPushButton:checked { border-image: url(images/squareprev.png)}')
         self.setFixedSize(100,100)
 
+    def setbtnzero(self):
+        if self.isChecked():
+            self.toggle()
+
+    def setbtnuno(self):
+        if not self.isChecked():
+            self.toggle()
+
 class Form(QWidget):
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
@@ -101,22 +109,14 @@ class Form(QWidget):
         camonitor("VEPP3:CurrentRequest-RB",self.checkCurrent)
         camonitor("VEPP3:CurrentTotal-RB",self.checkCurrent)
 
-    def setbtnzero(self,b):
-        if b.isChecked():
-            b.toggle()
-
-    def setbtnuno(self,b):
-        if not b.isChecked():
-            b.toggle()
-
     def whichbtn(self,b):
         if b.isChecked():
             if b.text()=="e+":
                 self.setPv(2)
-                self.setbtnzero(self.b1)
+                self.b1.setbtnzero()
             elif b.text()=="e-":
                 self.setPv(1)
-                self.setbtnzero(self.b2)
+                self.b2.setbtnzero()
 
         else:
             self.setPv(0)
@@ -125,14 +125,14 @@ class Form(QWidget):
         print "camonitor",pv_val
         self.polarity = pv_val
         if pv_val==0:
-            self.setbtnzero(self.b1)
-            self.setbtnzero(self.b2)
+            self.b1.setbtnzero()
+            self.b2.setbtnzero()
         elif pv_val==1:
-            self.setbtnuno(self.b1)
-            self.setbtnzero(self.b2)
+            self.b1.setbtnuno()
+            self.b2.setbtnzero()
         elif pv_val==2:
-            self.setbtnzero(self.b1)
-            self.setbtnuno(self.b2)
+            self.b1.setbtnzero()
+            self.b2.setbtnuno()
 
     def setPv(self,value):
         while True:
