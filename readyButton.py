@@ -24,31 +24,68 @@ class MonitoringThread(QThread):
         camonitor(self.pvname,self.printpv)
 
 
-class Form(QDialog):
+class ConfigInfo(QDialog):
+    def __init__(self, parent=None):
+        super(ConfigInfo, self).__init__(parent)
+        self.setWindowTitle("Config info")
+
+        label = QLabel()
+        label.setText('Config filename: "config"')
+        vbox = QVBoxLayout()
+        vbox.addWidget(label)
+        vbox.addStretch()
+        self.setLayout(vbox)
+
+
+class MainWin(QMainWindow):
+
+    def __init__(self):
+        super(MainWin, self).__init__()
+        self.form = Form(self)
+        self.setCentralWidget(self.form)
+        self.setWindowTitle("Request")
+        self.configinfo = ConfigInfo()
+
+        helpaction = QAction("&config file",self)
+        helpaction.triggered.connect(self.showconfig)
+        mainmenu = self.menuBar()
+        helpmenu = mainmenu.addMenu('&Help')
+        helpmenu.addAction(helpaction)
+
+    def showconfig(self):
+        self.configinfo.show()
+
+
+class RequestButton(QPushButton):
+    def __init__(self, Text, parent=None):
+        super(RequestButton, self).__init__()
+        self.setupbt(Text)
+
+    def setupbt(self, Text):
+        self.setText(Text)
+        self.setCheckable(True)
+        self.setStyleSheet('QPushButton:checked { border-image: url(images/squareprev.png)}')
+        self.setFixedSize(100,100)
+
+class Form(QWidget):
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
 
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignCenter)
         self.setLayout(layout)
 
-        self.b1 = QPushButton("e-")
-        self.b1.setCheckable(True)
+        self.b1 = RequestButton("e-")
         self.b1.clicked.connect(lambda:self.whichbtn(self.b1))
-        self.b1.setStyleSheet('QPushButton:checked { border-image: url(images/squareprev.png)}')
-        self.b1.setFixedSize(100,100)
         layout.addWidget(self.b1)
 
-        self.b2 = QPushButton("e+")
-        self.b2.setCheckable(True)
+        self.b2 = RequestButton("e+")
         self.b2.clicked.connect(lambda:self.whichbtn(self.b2))
-        self.b2.setFixedSize(100,100)
-        self.b2.setStyleSheet('QPushButton:checked { border-image: url(images/squareprev.png)}')
         layout.addWidget(self.b2)
 
         self.pvname = "VEPP3:InjRequest-SP"
 
         self.polarity = 0
-        self.setWindowTitle("Request")
         self.setbtns(caget(self.pvname))
 
         camonitor(self.pvname,self.setbtns)
@@ -126,7 +163,7 @@ class Form(QDialog):
 
 def main():
     app = cothread.iqt()
-    ex = Form()
+    ex = MainWin()
     ex.show()
     cothread.WaitForQuit()
 
