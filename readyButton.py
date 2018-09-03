@@ -45,7 +45,7 @@ class MainWin(QMainWindow):
         self.setCentralWidget(self.form)
         self.setWindowTitle("Request")
         self.configinfo = ConfigInfo()
-        self.resize(100,200)
+        self.resize(50,50)
 
         helpaction = QAction("&config file",self)
         helpaction.triggered.connect(self.showconfig)
@@ -65,7 +65,7 @@ class RequestButton(QPushButton):
     def setupbt(self, Text):
         self.setText(Text)
         self.setCheckable(True)
-        self.setStyleSheet('QPushButton { border-image: url(images/gray-rectangle-button.png)}'
+        self.setStyleSheet('QPushButton { border-image: url(images/gray-rectangle-button.png);font-size:30px;}'
                            'QPushButton:checked { border-image: url(images/yellow-rectangle-button.svg)}')
         self.setFixedSize(80,80)
 
@@ -83,6 +83,7 @@ class Form(QWidget):
 
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
+	layout.setContentsMargins(0,0,0,0)
         self.setLayout(layout)
 
         self.b1 = RequestButton("e-")
@@ -147,19 +148,16 @@ class Form(QWidget):
 
     def checkCurrent(self,value):
         status = caget("VEPP3:Status-RB")
-        print status
         if status == 2:
             polarity = caget("VEPP3:Polarity-RB")
-            print polarity,self.polarity
             if polarity == self.polarity:
                 currentreq = caget("VEPP3:CurrentRequest-RB")
                 currenttotal = caget("VEPP3:CurrentTotal-RB")
-                print currenttotal,currentreq
                 if currenttotal > currentreq*self.check_coef:
                     self.setPv(0)
 
     def readConfig(self):
-        with open("config") as config:
+        with open("/home/vepp4/beamrequest/ReadyButton/config") as config:
             self.check_coef = config.readline()
 
 
