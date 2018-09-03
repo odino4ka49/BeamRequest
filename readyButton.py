@@ -30,7 +30,7 @@ class ConfigInfo(QDialog):
         self.setWindowTitle("Config info")
 
         label = QLabel()
-        label.setText('Config filename: "config"')
+        label.setText('Config file: "/home/vepp4/beamrequest/ReadyButton/config"')
         vbox = QVBoxLayout()
         vbox.addWidget(label)
         vbox.addStretch()
@@ -45,6 +45,7 @@ class MainWin(QMainWindow):
         self.setCentralWidget(self.form)
         self.setWindowTitle("Request")
         self.configinfo = ConfigInfo()
+        self.resize(100,200)
 
         helpaction = QAction("&config file",self)
         helpaction.triggered.connect(self.showconfig)
@@ -64,8 +65,9 @@ class RequestButton(QPushButton):
     def setupbt(self, Text):
         self.setText(Text)
         self.setCheckable(True)
-        self.setStyleSheet('QPushButton:checked { border-image: url(images/squareprev.png)}')
-        self.setFixedSize(100,100)
+        self.setStyleSheet('QPushButton { border-image: url(images/gray-rectangle-button.png)}'
+                           'QPushButton:checked { border-image: url(images/yellow-rectangle-button.svg)}')
+        self.setFixedSize(80,80)
 
     def setbtnzero(self):
         if self.isChecked():
