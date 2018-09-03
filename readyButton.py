@@ -65,8 +65,8 @@ class RequestButton(QPushButton):
     def setupbt(self, Text):
         self.setText(Text)
         self.setCheckable(True)
-        self.setStyleSheet('QPushButton { border-image: url(images/gray-rectangle-button.png);font-size:30px;}'
-                           'QPushButton:checked { border-image: url(images/yellow-rectangle-button.svg)}')
+        self.setStyleSheet('QPushButton { border-image: url(/home/vepp4/beamrequest/ReadyButton/images/gray-rectangle-button.png);font-size:30px;}'
+                           'QPushButton:checked { border-image: url(/home/vepp4/beamrequest/ReadyButton/images/yellow-rectangle-button.svg)}')
         self.setFixedSize(80,80)
 
     def setbtnzero(self):
