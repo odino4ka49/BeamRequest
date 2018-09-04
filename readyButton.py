@@ -54,9 +54,6 @@ class MainWin(QMainWindow):
     def showconfig(self):
         self.configinfo.show()
 
-    def displayError(self,message):
-        self.err = QMessageBox.critical(self,"Error",message)
-
 
 class RequestButton(QPushButton):
     def __init__(self, Text, parent=None):
@@ -100,7 +97,7 @@ class Form(QWidget):
         self.pvname = "VEPP3:InjRequest-SP"
 
         self.polarity = 0
-        self.setbtns(caget(self.pvname))
+        self.syncronize(self.pvname)
 
         camonitor(self.pvname, self.setbtns)
         self.check_coef = 0.9
@@ -115,16 +112,26 @@ class Form(QWidget):
         camonitor("VEPP3:CurrentTotal-RB", self.checkCurrent)
 
     def whichbtn(self, b):
-        if b.isChecked():
-            if b.text() == "e+":
-                self.setPv(2)
-                self.b1.setbtnzero()
-            elif b.text() == "e-":
-                self.setPv(1)
-                self.b2.setbtnzero()
+	try:
+            if b.isChecked():
+                if b.text() == "e+":
+                    self.setPv(2)
+                    self.b1.setbtnzero()
+                elif b.text() == "e-":
+                    self.setPv(1)
+                    self.b2.setbtnzero()
 
-        else:
-            self.setPv(0)
+            else:
+                self.setPv(0)
+        except Exception as e:
+            self.displayError(format(e))
+	    self.syncronize(self.pvname)
+
+    def syncronize(self, pvname):
+	try:
+	    self.setbtns(caget(pvname))
+	except Exception as e:
+	    self.displayError(format(e))
 
     def setbtns(self, pv_val):
         print "camonitor", pv_val
@@ -149,28 +156,32 @@ class Form(QWidget):
                 break
 
     def checkCurrent(self, value):
-        status = caget("VEPP3:Status-RB")
-        if status == 2:
-            polarity = caget("VEPP3:Polarity-RB")
-            if polarity == self.polarity:
-                currentreq = caget("VEPP3:CurrentRequest-RB")
-                currenttotal = caget("VEPP3:CurrentTotal-RB")
-                if currenttotal > currentreq * self.check_coef:
-                    self.setPv(0)
+	try:
+	    status = caget("VEPP3:Status-RB")
+	    if status == 2:
+	        polarity = caget("VEPP3:Polarity-RB")
+	        if polarity == self.polarity:
+		    currentreq = caget("VEPP3:CurrentRequest-RB")
+		    currenttotal = caget("VEPP3:CurrentTotal-RB")
+		    if currenttotal > currentreq * self.check_coef:
+		        self.setPv(0)
+	except Exception as e:
+	    self.displayError(format(e))
 
     def readConfig(self):
         with open("/home/oidin/projects/readybutton/ReadyButton/config") as config:
             self.check_coef = config.readline()
 
+    def displayError(self,message):
+	print "heeeeeey"
+        self.err = QMessageBox.critical(self,"Error",message)
+
 
 def main():
     app = cothread.iqt()
     ex = MainWin()
-    try:
-        ex.show()
-        cothread.WaitForQuit()
-    except Exception as e:
-        ex.displayError(e.message)
+    ex.show()
+    cothread.WaitForQuit()
 
 if __name__ == '__main__':
     main()
