@@ -19,7 +19,7 @@ class LoggingThread(QThread):
         self.wait()
 
     def getTime(self):    
-	timenow = datetime.now()
+	timenow = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	return timenow
 
     def getPersonSurname(self):
@@ -42,7 +42,10 @@ class LoggingThread(QThread):
 
     def logPressEvent(self,time,value,person):
 	print "logme",time,value,person
-	
+	file = open(self.filename,'a+')
+	text = time + " " + str(value) + " " + person + "\n"
+	file.write(text)
+	file.close()
 
     def savePressEvent(self, value):
 	time = self.getTime()
@@ -108,7 +111,7 @@ class Form(QWidget):
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
 
-	self.log = LoggingThread("filename")
+	self.log = LoggingThread("/home/oidin/projects/readybutton/ReadyButton/log")
 
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
