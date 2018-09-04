@@ -3,24 +3,51 @@ __author__ = 'oidin'
 import cothread.catools as catools
 import cothread
 import sys
+import psycopg2
+from datetime import date, datetime
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from cothread.catools import *
 
 
-class MonitoringThread(QThread):
-    def __init__(self, pvname):
+class LoggingThread(QThread):
+    def __init__(self, filename):
         QThread.__init__(self)
-        self.pvname = pvname
+        self.filename = filename
 
     def __del__(self):
         self.wait()
 
-    def printpv(self, pv_val):
-        print pv_val
+    def getTime(self):    
+	timenow = datetime.now()
+	return timenow
 
-    def run(self):
-        camonitor(self.pvname, self.printpv)
+    def getPersonSurname(self):
+	surname = "Anderson"
+	try:
+	    conn = psycopg2.connect("dbname=v4parameters user=vepp4 host=vepp4-pg port=5432")
+	    cur = conn.cursor()
+	    duty = 1 if (datetime.now().hour < 21) else 2
+	    cur.execute("""SELECT ddate, dname, nduty FROM ttvduty WHERE ddate = %s AND nduty = %s;""",
+		    (date.today().isoformat(), duty,))
+	    rows = cur.fetchall()
+	    row = rows[0]
+	    if isinstance(row, list):
+	        surname = row[1].decode('koi8-r').encode('utf-8')
+	    cur.close()
+	    conn.close()
+	except Exception as e:
+	    surname = format(e)
+	return surname
+
+    def logPressEvent(self,time,value,person):
+	print "logme",time,value,person
+	
+
+    def savePressEvent(self, value):
+	time = self.getTime()
+	person = self.getPersonSurname()
+	self.logPressEvent(time,value,person)
 
 
 class ConfigInfo(QDialog):
@@ -81,6 +108,8 @@ class Form(QWidget):
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
 
+	self.log = LoggingThread("filename")
+
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -117,12 +146,14 @@ class Form(QWidget):
                 if b.text() == "e+":
                     self.setPv(2)
                     self.b1.setbtnzero()
+		    self.log.savePressEvent(2)
                 elif b.text() == "e-":
                     self.setPv(1)
                     self.b2.setbtnzero()
-
+		    self.log.savePressEvent(1)
             else:
                 self.setPv(0)
+		self.log.savePressEvent(0)
         except Exception as e:
             self.displayError(format(e))
 	    self.syncronize(self.pvname)
